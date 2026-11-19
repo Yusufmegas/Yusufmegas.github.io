@@ -1,5 +1,7 @@
 const lightbox = document.querySelector(".lightbox");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const turkish = document.documentElement.lang === "tr";
+const enlargeLabel = turkish ? "Fotoğrafı büyüt: " : "Enlarge photo: ";
 let stepPhoto;
 
 lightbox.querySelectorAll("[data-step]").forEach((button) => {
@@ -11,19 +13,18 @@ lightbox.addEventListener("keydown", (event) => {
 });
 
 document.querySelectorAll("[data-carousel]").forEach((carousel, carouselIndex) => {
-  const gallery = photoGroups[carousel.dataset.carousel];
+  const gallery = photoGroups[carousel.dataset.carousel].map(([file, en, tr]) => [file, turkish ? tr : en]);
   const interval = 3800 + carouselIndex * 420;
   const track = carousel.querySelector(".gallery-track");
   const galleryCaption = carousel.querySelector(".gallery-caption");
   const galleryPosition = carousel.querySelector(".gallery-position");
-  const playButton = carousel.querySelector(".gallery-play");
   const photo = lightbox.querySelector("img");
   const photoCaption = lightbox.querySelector("figcaption");
   const position = lightbox.querySelector(".photo-position");
 
   let activeSlide = 0;
   let currentPhoto = 0;
-  let playing = !reducedMotion.matches;
+  let hovered = false;
   let visible = false;
   let timer;
   let scrollFrame;
@@ -32,7 +33,7 @@ document.querySelectorAll("[data-carousel]").forEach((carousel, carouselIndex) =
     const slide = index === 0 ? track.querySelector(".gallery-slide") : document.createElement("button");
     slide.className = "gallery-slide";
     slide.type = "button";
-    slide.setAttribute("aria-label", "Enlarge photo: " + caption);
+    slide.setAttribute("aria-label", enlargeLabel + caption);
     slide.tabIndex = index === 0 ? 0 : -1;
 
     if (index > 0) {
@@ -89,7 +90,7 @@ document.querySelectorAll("[data-carousel]").forEach((carousel, carouselIndex) =
 
   function scheduleAdvance() {
     clearTimeout(timer);
-    if (playing && visible && !document.hidden && !lightbox.open) {
+    if (!reducedMotion.matches && visible && !hovered && !carousel.querySelector(":focus-visible") && !document.hidden && !lightbox.open) {
       timer = setTimeout(() => {
         moveTo(activeSlide + 1);
         scheduleAdvance();
@@ -97,17 +98,9 @@ document.querySelectorAll("[data-carousel]").forEach((carousel, carouselIndex) =
     }
   }
 
-  function setPlaying(value) {
-    playing = value;
-    galleryCaption.setAttribute("aria-live", playing ? "off" : "polite");
-    playButton.textContent = playing ? "Pause" : "Play";
-    playButton.setAttribute("aria-label", playing ? "Pause slideshow" : "Play slideshow");
-    scheduleAdvance();
-  }
-
   function navigateBy(step) {
-    setPlaying(false);
     moveTo(activeSlide + step);
+    scheduleAdvance();
   }
 
   track.addEventListener("scroll", () => {
@@ -118,8 +111,17 @@ document.querySelectorAll("[data-carousel]").forEach((carousel, carouselIndex) =
     });
   }, { passive: true });
 
-  track.addEventListener("pointerdown", () => setPlaying(false), { passive: true });
-  track.addEventListener("focusin", () => setPlaying(false));
+  carousel.addEventListener("pointerenter", (event) => {
+    if (event.pointerType !== "mouse") return;
+    hovered = true;
+    scheduleAdvance();
+  });
+  carousel.addEventListener("pointerleave", () => {
+    hovered = false;
+    scheduleAdvance();
+  });
+  carousel.addEventListener("focusin", scheduleAdvance);
+  carousel.addEventListener("focusout", () => queueMicrotask(scheduleAdvance));
   track.addEventListener("keydown", (event) => {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     event.preventDefault();
@@ -128,7 +130,6 @@ document.querySelectorAll("[data-carousel]").forEach((carousel, carouselIndex) =
   carousel.querySelectorAll("[data-gallery-step]").forEach((button) => {
     button.addEventListener("click", () => navigateBy(Number(button.dataset.galleryStep)));
   });
-  playButton.addEventListener("click", () => setPlaying(!playing));
 
   lightbox.addEventListener("close", scheduleAdvance);
 
@@ -138,7 +139,6 @@ document.querySelectorAll("[data-carousel]").forEach((carousel, carouselIndex) =
   }, { threshold: 0.25 }).observe(track);
 
   document.addEventListener("visibilitychange", scheduleAdvance);
-  reducedMotion.addEventListener("change", (event) => setPlaying(!event.matches));
+  reducedMotion.addEventListener("change", scheduleAdvance);
   carousel.querySelector(".gallery-controls").hidden = false;
-  setPlaying(playing);
 });
