@@ -41,10 +41,6 @@ h1 em { white-space: nowrap; }
 .intro { max-width: 33ch; color: var(--muted); font-size: 1.09rem; margin-top: 1.55rem; }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; margin-top: 1.7rem; }
 .text-link { display: inline-block; width: fit-content; background: none; padding: 0 0 .2rem; border: 0; border-bottom: 1px solid #a9b4bd; cursor: pointer; font-size: .92rem; font-weight: 700; }
-.hero-photo { position: relative; border-radius: .6rem; box-shadow: 0 24px 56px -34px #13263890; }
-.hero-photo img { height: clamp(340px, 37.7vw, 542px); border-radius: .6rem; object-fit: cover; object-position: 53% center; background: var(--ink); }
-.hero-photo figcaption { position: absolute; left: 1rem; bottom: 1rem; padding: .5rem .9rem; display: flex; align-items: center; gap: .55rem; background: #fff; border-radius: 24px; font-size: .79rem; font-weight: 600; }
-.hero-photo figcaption span { width: .36rem; height: .36rem; border-radius: 50%; background: var(--accent); }
 .essentials { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 2rem; padding: 1.08rem 0; border-block: 1px solid var(--line); }
 .essentials > div { padding-inline: 1.55rem; border-right: 1px solid var(--line); }
 .essentials > div:first-child { padding-left: 0; }
@@ -62,14 +58,9 @@ h2 { font-size: clamp(2.35rem, 4.05vw, 4.2rem); line-height: 1.08; letter-spacin
 .experiences p { max-width: 31ch; }
 .itinerary-band { background: var(--wash); }
 .itinerary { display: grid; align-items: center; grid-template-columns: 1.05fr 1fr; gap: clamp(2rem, 8vw, 8.5rem); }
-.itinerary-photo img { object-fit: cover; aspect-ratio: 1.4; border-radius: 4px; }
-.itinerary-photo figcaption { padding-top: .5rem; font-size: .85rem; color: var(--muted); }
 .timeline { margin: 1.6rem 0 0; padding: 0; list-style: none; }
 .timeline li { display: grid; grid-template-columns: 7.25rem 1fr; gap: 1rem; padding: .85rem 0; border-top: 1px solid #d3dce1; }
 .timeline li > span { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
-.gallery-band { background: #f8f6f1; }
-.gallery-heading { margin-bottom: 2rem; }
-.gallery-heading p { justify-self: end; }
 .carousel { overflow: hidden; border-radius: .6rem; background: #fff; border: 1px solid #e7e0d5; }
 .gallery-track {
   display: flex;
@@ -140,7 +131,6 @@ footer { border-top: 1px solid var(--line); }
   h1 { font-size: clamp(3.8rem, 12vw, 6.1rem); }
   .intro { margin-top: 1.12rem; }
   .actions { margin-top: 1.25rem; }
-  .hero-photo img { height: auto; aspect-ratio: 1.43; }
   .essentials { grid-template-columns: repeat(2, 1fr); padding: 0; }
   .essentials > div { padding: .7rem .8rem; }
   .essentials > div:nth-child(3) { padding-left: 0; }
@@ -149,15 +139,12 @@ footer { border-top: 1px solid var(--line); }
   .section-heading, .itinerary, .details-layout { grid-template-columns: 1fr; gap: 1.4rem; }
   .section-heading { gap: .7rem; }
   .experiences { gap: .9rem; }
-  .gallery-heading p { justify-self: start; }
   .gallery-slide { aspect-ratio: 1.52; }
 }
 @media (max-width: 550px) {
   .shell { width: calc(100% - 36px); }
   .header-action { padding-inline: .75rem; font-size: .85rem; }
   nav { gap: .4rem; }
-  .hero-photo img { aspect-ratio: 1.26; object-position: center 62%; }
-  .hero-photo figcaption { bottom: .65rem; left: .65rem; }
   .experiences { grid-template-columns: 1fr; gap: 1.65rem; }
   .experiences p { max-width: 40ch; }
   .gallery-bar { padding: .65rem .7rem; gap: .6rem; }
@@ -171,4 +158,21 @@ footer { border-top: 1px solid var(--line); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .button, .experiences img { transition: none; }
+}
+
+.carousel-cover { box-shadow: 0 24px 56px -34px #13263890; }
+.carousel-cover .gallery-slide { height: clamp(340px, 36vw, 520px); }
+.carousel-route .gallery-slide { aspect-ratio: 1.5; }
+.experiences .gallery-slide { aspect-ratio: 1.6; }
+.experiences .gallery-slide img { aspect-ratio: auto; border-radius: 0; }
+.carousel .gallery-bar { padding: .55rem .75rem; }
+.carousel .gallery-controls[hidden] { display: none; }
+.experiences .gallery-caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.experiences .gallery-controls button { min-width: 36px; min-height: 36px; }
+.experiences .gallery-controls .gallery-play { min-width: 58px; padding-inline: .6rem; }
+@media (max-width: 780px) {
+  .carousel-cover .gallery-slide { height: auto; aspect-ratio: 1.43; }
+}
+@media (max-width: 550px) {
+  .carousel-cover .gallery-slide { aspect-ratio: 1.26; }
 }
